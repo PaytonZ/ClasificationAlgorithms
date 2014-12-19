@@ -1,5 +1,5 @@
 import numpy 
-
+import random
 
 
 def getKMeansB():
@@ -8,7 +8,7 @@ def getKMeansB():
 def getLloydsTolerance():
 	return numpy.power(10,-10)
 
-def getKMeansTolerance():
+def getKMeansEpsilon():
 	return 0.01
 
 def getLloydsMaxK():
@@ -34,3 +34,23 @@ def getSOMFinalAlfa():
 
 def getSOMDistanceT():
 	return numpy.power(10,-5)
+
+def getN():
+	return 4
+
+def getClassesCount():
+	return 2
+def getKMeansInitializeUMAtrix(xVectorsCount):
+
+	random.seed()
+	ut = []
+	print ">>> Numero de vectores de entrenamiento: ",xVectorsCount
+	
+	for x in range(xVectorsCount):
+		rand = random.random()
+		iRandom = 1-rand
+		ut.append(rand)
+		ut.append(iRandom)
+	ut = numpy.reshape(ut,(xVectorsCount,getClassesCount()))
+
+	return ut

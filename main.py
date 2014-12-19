@@ -10,46 +10,56 @@ sys.path.append( "SOM-Algorithm" )
 import SOM
 
 sys.path.append( "k-medidas/" )
-from KMeans import *
+from KMeans import KMeans,Class as KMeansClass
 
-
-def readMedidas(file):
+def loadFileKMeans(file,classNameIndex):
+	
+	k = KMeans(constants.getN())
 	fileHelper = FileHelper()
-
-	try:
-		f = fileHelper.openReadOnlyFile(file)
-
-		lineas = f.readlines()
-		medidas = []
-		for linea in lineas:
-			linea = linea.split(",")
-			linea[len(linea)-1] = linea[len(linea)-1].strip("\r\n")
-
-			if ( linea != "\r\n" or linea != "\n" ):
-				for m in linea:
-					muestra = m.split(":")
-					medidas.append((muestra[0], muestra[1]))
-	except:
-		print("Error al leer el fichero")
-
-	return medidas
-
-def loadFileKMeans(file):
 	
 
-	fileHelper = FileHelper()
+	c1 = KMeansClass(0,"setosa")
+	c1.setVCenter([4.6,3.0,4.0,0.0])
+	c2 = KMeansClass(1,"versicolor")
+	c2.setVCenter([6.8,3.4,4.6,0.7])
 
+	k.addClass(c1)
+	k.addClass(c2)
 	try:
 		f = fileHelper.openReadOnlyFile(file)
-
+		
 		lineas = f.readlines()
+		uMatrix = constants.getKMeansInitializeUMAtrix(len(lineas))
+		k.setUMatrix(uMatrix)
 		xVector = []
-		for linea in lineas:
-			xVector = linea.strip("\r\n").split(",")
 
+		for linea in lineas:
+
+			xVector = linea.strip("\r\n").split(",")
+			del xVector[classNameIndex-1]
+			xVector = [float(x) for x in xVector]
+			print xVector
+
+			k.addXVector(xVector)
+
+		return k
 	except:
 		print("Error al leer el fichero")
+
 
 if __name__ == "__main__":
 	
-	loadFileKMeans("Iris2Clases.txt")
+
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "+++++++++++"
+	print "+++++++++++                KMEANS"
+	print "+++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+
+	k = loadFileKMeans("Iris2Clases.txt",5)
+
+	print ">>> Carga finalizada"
+
+	k.doTraining(epsilonLimit=constants.getKMeansEpsilon(),b=constants.getKMeansB())
