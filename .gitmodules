@@ -1,0 +1,12 @@
+[submodule "k-medidas"]
+	path = k-medidas
+	url = https://github.com/plandevida/k-medidas.git
+[submodule "SOM-Algorithm"]
+	path = SOM-Algorithm
+	url = https://github.com/emilalvap/SOM-Algorithm.git
+[submodule "LloydsAlgorithm"]
+	path = LloydsAlgorithm
+	url = https://github.com/emilalvap/LloydsAlgorithm.git
+[submodule "BayesAlgorithm"]
+	path = BayesAlgorithm
+	url = https://github.com/emilalvap/BayesAlgorithm.git
