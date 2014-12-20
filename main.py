@@ -18,9 +18,9 @@ def loadFileKMeans(file,classNameIndex):
 	fileHelper = FileHelper()
 	
 
-	c1 = KMeansClass(0,"setosa")
+	c1 = KMeansClass(0,"Iris-setosa")
 	c1.setVCenter([4.6,3.0,4.0,0.0])
-	c2 = KMeansClass(1,"versicolor")
+	c2 = KMeansClass(1,"Iris-versicolor")
 	c2.setVCenter([6.8,3.4,4.6,0.7])
 
 	k.addClass(c1)
@@ -38,7 +38,6 @@ def loadFileKMeans(file,classNameIndex):
 			xVector = linea.strip("\r\n").split(",")
 			del xVector[classNameIndex-1]
 			xVector = [float(x) for x in xVector]
-			print xVector
 
 			k.addXVector(xVector)
 
@@ -46,9 +45,36 @@ def loadFileKMeans(file,classNameIndex):
 	except:
 		print("Error al leer el fichero")
 
+def loadFileTest(file,classNameIndex):
+	
+	fileHelper = FileHelper()
+	try:
+		f = fileHelper.openReadOnlyFile(file)
+		
+		lineas = f.readlines()
+		xVector = []
+
+		for linea in lineas:
+
+			xVector = linea.strip("\r\n").split(",")
+			del xVector[classNameIndex-1]
+			xVector = [float(x) for x in xVector]
+
+		return xVector
+	except:
+		print("Error al leer el fichero")
+
+
 
 if __name__ == "__main__":
 	
+
+	test1 = loadFileTest("TestIris01.txt",5)
+	print "Loaded test ", test1
+	test2 = loadFileTest("TestIris02.txt",5)
+	print "Loaded test ", test2
+	test3 = loadFileTest("TestIris03.txt",5)
+	print "Loaded test ", test3
 
 	print "++++++++++++++++++++++++++++++++++++++++++++"
 	print "++++++++++++++++++++++++++++++++++++++++++++"
@@ -60,6 +86,34 @@ if __name__ == "__main__":
 
 	k = loadFileKMeans("Iris2Clases.txt",5)
 
-	print ">>> Carga finalizada"
+	print ">>> Carga finalizada KMEANS"
 
 	k.doTraining(epsilonLimit=constants.getKMeansEpsilon(),b=constants.getKMeansB())
+
+	print ">>> Test KMEANS \n"
+	print "Test 1:"
+	print  k.clasifyEuclideanDistance(test1),"\n"
+	print k.clasifyProbability(test1,constants.getKMeansB())
+	print "\nTest 2:"
+	print k.clasifyEuclideanDistance(test2),"\n"
+	print k.clasifyProbability(test2,constants.getKMeansB())
+	print "\nTest 3:"
+	print  k.clasifyEuclideanDistance(test3),"\n"
+	print k.clasifyProbability(test3,constants.getKMeansB())
+	
+	'''
+	print "\n\n\n"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "+++++++++++"
+	print "+++++++++++                BAYES"
+	print "+++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+
+	bayes = loadFileBayes("Iris2Clases.txt",5)
+
+	print ">>> Carga finalizada BAYES"
+
+	k.doTraining(epsilonLimit=constants.getKMeansEpsilon(),b=constants.getKMeansB())
+	'''
