@@ -2,15 +2,18 @@ import sys
 from utilities import FileHelper
 import constants
 
-''' Import de los algoritmos '''
+''' Algorithm imports '''
 import LloydsAlgorithm.VectorialCuantification
-import BayesAlgorithm.Bayes
+from BayesAlgorithm.Bayes import Bayes, Class as BayesClass
 
 sys.path.append( "SOM-Algorithm" )
 import SOM
 
 sys.path.append( "k-medidas/" )
 from KMeans import KMeans,Class as KMeansClass
+''' End of algorithm imports '''
+
+''' This method loads KMeans needed values and adds the to the wrapper class KMeans '''
 
 def loadFileKMeans(file,classNameIndex):
 	
@@ -42,6 +45,32 @@ def loadFileKMeans(file,classNameIndex):
 			k.addXVector(xVector)
 
 		return k
+	except:
+		print("Error al leer el fichero")
+
+''' This method loads Bayes needed values and adds the to the wrapper class Bayes '''
+
+def loadFileBayes(file,classNameIndex):
+
+	b = Bayes(constants.getN())
+	fileHelper = FileHelper()
+
+	try:
+		f = fileHelper.openReadOnlyFile(file)
+		
+		lineas = f.readlines()
+		xVector = []
+
+		for linea in lineas:
+
+			xVector = linea.strip("\r\n").split(",")
+			className = xVector[classNameIndex-1]
+			del xVector[classNameIndex-1]
+			xVector = [float(x) for x in xVector]
+
+			b.addX(xVector,className)
+
+		return b
 	except:
 		print("Error al leer el fichero")
 
@@ -90,7 +119,7 @@ if __name__ == "__main__":
 
 	k.doTraining(epsilonLimit=constants.getKMeansEpsilon(),b=constants.getKMeansB())
 
-	print ">>> Test KMEANS \n"
+	print "\n>>> Test KMEANS \n"
 	print "Test 1:"
 	print  k.clasifyEuclideanDistance(test1),"\n"
 	print k.clasifyProbability(test1,constants.getKMeansB())
@@ -101,7 +130,7 @@ if __name__ == "__main__":
 	print  k.clasifyEuclideanDistance(test3),"\n"
 	print k.clasifyProbability(test3,constants.getKMeansB())
 	
-	'''
+	
 	print "\n\n\n"
 	print "++++++++++++++++++++++++++++++++++++++++++++"
 	print "++++++++++++++++++++++++++++++++++++++++++++"
@@ -114,6 +143,16 @@ if __name__ == "__main__":
 	bayes = loadFileBayes("Iris2Clases.txt",5)
 
 	print ">>> Carga finalizada BAYES"
-
-	k.doTraining(epsilonLimit=constants.getKMeansEpsilon(),b=constants.getKMeansB())
-	'''
+	bayes.doTraining()
+	classes = bayes.getClasses()
+	for value in classes:
+		print "\n>>>>>>>>> Clase: ", value
+		print "\n>>> M:\n", bayes.getClass(value).getMVector()
+		print "\n>>> C:\n", bayes.getClass(value).getCMatrix()
+	print "\n>>> Test Bayes \n"
+	print "Test 1:"
+	print test1," clasificado como clase ", bayes.clasify(test1)
+	print "\nTest 2:"
+	print test2," clasificado como clase ", bayes.clasify(test2)
+	print "\nTest 3:"
+	print test3," clasificado como clase ", bayes.clasify(test3)
