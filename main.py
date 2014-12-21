@@ -3,7 +3,7 @@ from utilities import FileHelper
 import constants
 
 ''' Algorithm imports '''
-import LloydsAlgorithm.VectorialCuantification
+from LloydsAlgorithm.VectorialCuantification import VectorialCuantification
 from BayesAlgorithm.Bayes import Bayes, Class as BayesClass
 
 sys.path.append( "SOM-Algorithm" )
@@ -71,6 +71,37 @@ def loadFileBayes(file,classNameIndex):
 			b.addX(xVector,className)
 
 		return b
+	except:
+		print("Error al leer el fichero")
+
+''' This method loads Lloyds needed values and adds the to the wrapper class VectorialCuantification '''
+
+def loadFileLloyd(file,classNameIndex):
+
+	toleranceLimit = constants.getLloydsTolerance()
+	lloyd = VectorialCuantification(N=constants.getN(),maxK=constants.getLloydsMaxK(),tolerance=toleranceLimit)
+	lloyd.setGammaK(constants.getLLoydsGammaK())
+	#centers
+	lloyd.addInitialCenter([4.6,3.0,4.0,0.0],"Iris-setosa")
+	lloyd.addInitialCenter([6.8,3.4,4.6,0.7],"Iris-versicolor")
+	fileHelper = FileHelper()
+
+	try:
+		f = fileHelper.openReadOnlyFile(file)
+		
+		lineas = f.readlines()
+		xVector = []
+
+		for linea in lineas:
+
+			xVector = linea.strip("\r\n").split(",")
+			className = xVector[classNameIndex-1]
+			del xVector[classNameIndex-1]
+			xVector = [float(x) for x in xVector]
+
+			lloyd.addTrainingVector(xVector)
+
+		return lloyd
 	except:
 		print("Error al leer el fichero")
 
@@ -156,3 +187,26 @@ if __name__ == "__main__":
 	print test2," clasificado como clase ", bayes.clasify(test2)
 	print "\nTest 3:"
 	print test3," clasificado como clase ", bayes.clasify(test3)
+
+	print "\n\n\n"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "+++++++++++"
+	print "+++++++++++                LLOYD"
+	print "+++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+
+	lloyd = loadFileLloyd("Iris2Clases.txt",5)
+
+	print ">>> Carga finalizada LLOYD"
+	lloyd.generateTraining()
+	print ">>> Valores de los centros"
+	print lloyd.getCenters()
+	print "\n>>> Test Lloyd \n"
+	print "Test 1:"
+	print test1," clasificado como clase ", lloyd.clasify(test1)
+	print "\nTest 2:"
+	print test2," clasificado como clase ", lloyd.clasify(test2)
+	print "\nTest 3:"
+	print test3," clasificado como clase ", lloyd.clasify(test3)

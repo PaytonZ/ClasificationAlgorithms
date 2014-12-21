@@ -40,6 +40,7 @@ def getN():
 
 def getClassesCount():
 	return 2
+	
 def getKMeansInitializeUMAtrix(xVectorsCount):
 
 	random.seed()
