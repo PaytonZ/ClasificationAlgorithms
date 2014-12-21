@@ -1,13 +1,14 @@
 import sys
 from utilities import FileHelper
 import constants
+import numpy
 
 ''' Algorithm imports '''
 from LloydsAlgorithm.VectorialCuantification import VectorialCuantification
 from BayesAlgorithm.Bayes import Bayes, Class as BayesClass
 
-sys.path.append( "SOM-Algorithm" )
-import SOM
+sys.path.append( "SOM-Algorithm/" )
+from SOM import SOM
 
 sys.path.append( "k-medidas/" )
 from KMeans import KMeans,Class as KMeansClass
@@ -95,13 +96,40 @@ def loadFileLloyd(file,classNameIndex):
 		for linea in lineas:
 
 			xVector = linea.strip("\r\n").split(",")
-			className = xVector[classNameIndex-1]
 			del xVector[classNameIndex-1]
 			xVector = [float(x) for x in xVector]
 
 			lloyd.addTrainingVector(xVector)
 
 		return lloyd
+	except:
+		print("Error al leer el fichero")
+
+''' This method loads SOM needed values and adds the to the wrapper class SOM '''
+
+def loadFileSOM(file,classNameIndex):
+	
+	som = SOM(N = constants.getN(),maxK = constants.getSOMMaxK(),tolerance = constants.getSOMTolerance(),Tdistance = constants.getSOMDistanceT(),floatGamma = constants.getSOMGammaK(),alfaInicial = constants.getSOMInitialAlfa(),alfaFinal = constants.getSOMFinalAlfa(),variableGamma = False)
+	#centers
+	som.addInitialCenter([4.6,3.0,4.0,0.0],"Iris-setosa")
+	som.addInitialCenter([6.8,3.4,4.6,0.7],"Iris-versicolor")
+	fileHelper = FileHelper()
+
+	try:
+		f = fileHelper.openReadOnlyFile(file)
+		
+		lineas = f.readlines()
+		xVector = []
+
+		for linea in lineas:
+
+			xVector = linea.strip("\r\n").split(",")
+			del xVector[classNameIndex-1]
+			xVector = [float(x) for x in xVector]
+
+			som.addTrainingVector(xVector)
+
+		return som
 	except:
 		print("Error al leer el fichero")
 
@@ -210,3 +238,26 @@ if __name__ == "__main__":
 	print test2," clasificado como clase ", lloyd.clasify(test2)
 	print "\nTest 3:"
 	print test3," clasificado como clase ", lloyd.clasify(test3)
+
+	print "\n\n\n"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "+++++++++++"
+	print "+++++++++++                SOM"
+	print "+++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+	print "++++++++++++++++++++++++++++++++++++++++++++"
+
+	som = loadFileSOM("Iris2Clases.txt",5)
+	print ">>> Carga finalizada SOM"
+
+	som.doTraining()
+	print ">>> Valores de los centros"
+	print som.getCenters()
+	print "\n>>> Test SOM \n"
+	print "Test 1:"
+	print test1," clasificado como clase ", som.clasify(test1)
+	print "\nTest 2:"
+	print test2," clasificado como clase ", som.clasify(test2)
+	print "\nTest 3:"
+	print test3," clasificado como clase ", som.clasify(test3)
